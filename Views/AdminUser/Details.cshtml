@@ -1,0 +1,211 @@
+@model RealEstateManagementSystem.Models.User
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "User Details";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-person me-2"></i>User Details</h1>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@Model.FullName</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.HasPendingUpdates && !string.IsNullOrEmpty(Model.PendingUpdates))
+        {
+            <div class="alert alert-warning">
+                <h5><i class="bi bi-exclamation-triangle me-2"></i>Pending Profile Update Request</h5>
+                @{
+                    try
+                    {
+                        var pendingData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(Model.PendingUpdates!);
+                        if (pendingData != null)
+                        {
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Field</th>
+                                            <th>Current Value</th>
+                                            <th>Requested Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (pendingData.ContainsKey("FirstName"))
+                                        {
+                                            <tr>
+                                                <td><strong>First Name</strong></td>
+                                                <td>@Model.FirstName</td>
+                                                <td><strong class="text-primary">@pendingData["FirstName"].GetString()</strong></td>
+                                            </tr>
+                                        }
+                                        @if (pendingData.ContainsKey("LastName"))
+                                        {
+                                            <tr>
+                                                <td><strong>Last Name</strong></td>
+                                                <td>@Model.LastName</td>
+                                                <td><strong class="text-primary">@pendingData["LastName"].GetString()</strong></td>
+                                            </tr>
+                                        }
+                                        @if (pendingData.ContainsKey("PhoneNumber"))
+                                        {
+                                            <tr>
+                                                <td><strong>Phone Number</strong></td>
+                                                <td>@(Model.PhoneNumber ?? "Not set")</td>
+                                                <td><strong class="text-primary">@(pendingData["PhoneNumber"].GetString() ?? "Not set")</strong></td>
+                                            </tr>
+                                        }
+                                        @if (pendingData.ContainsKey("Address"))
+                                        {
+                                            <tr>
+                                                <td><strong>Address</strong></td>
+                                                <td>@(Model.Address ?? "Not set")</td>
+                                                <td><strong class="text-primary">@(pendingData["Address"].GetString() ?? "Not set")</strong></td>
+                                            </tr>
+                                        }
+                                        @if (pendingData.ContainsKey("City"))
+                                        {
+                                            <tr>
+                                                <td><strong>City</strong></td>
+                                                <td>@(Model.City ?? "Not set")</td>
+                                                <td><strong class="text-primary">@(pendingData["City"].GetString() ?? "Not set")</strong></td>
+                                            </tr>
+                                        }
+                                        @if (pendingData.ContainsKey("State"))
+                                        {
+                                            <tr>
+                                                <td><strong>State</strong></td>
+                                                <td>@(Model.State ?? "Not set")</td>
+                                                <td><strong class="text-primary">@(pendingData["State"].GetString() ?? "Not set")</strong></td>
+                                            </tr>
+                                        }
+                                        @if (pendingData.ContainsKey("ZipCode"))
+                                        {
+                                            <tr>
+                                                <td><strong>Zip Code</strong></td>
+                                                <td>@(Model.ZipCode ?? "Not set")</td>
+                                                <td><strong class="text-primary">@(pendingData["ZipCode"].GetString() ?? "Not set")</strong></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <form asp-action="ApproveUpdate" asp-route-id="@Model.UserId" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-success" onclick="return confirm('Approve this profile update?');">
+                                        <i class="bi bi-check-circle me-2"></i>Approve Update
+                                    </button>
+                                </form>
+                                <form asp-action="RejectUpdate" asp-route-id="@Model.UserId" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Reject this profile update?');">
+                                        <i class="bi bi-x-circle me-2"></i>Reject Update
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    }
+                    catch
+                    {
+                        <p class="text-danger">Error loading pending updates.</p>
+                    }
+                }
+            </div>
+            <hr />
+        }
+        
+        <dl class="row">
+            <dt class="col-sm-3">Full Name</dt>
+            <dd class="col-sm-9">@Model.FullName</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Phone</dt>
+            <dd class="col-sm-9">@(Model.PhoneNumber ?? "Not provided")</dd>
+
+            <dt class="col-sm-3">Address</dt>
+            <dd class="col-sm-9">@(Model.Address ?? "Not provided")</dd>
+
+            <dt class="col-sm-3">City</dt>
+            <dd class="col-sm-9">@(Model.City ?? "N/A")</dd>
+
+            <dt class="col-sm-3">State</dt>
+            <dd class="col-sm-9">@(Model.State ?? "N/A")</dd>
+
+            <dt class="col-sm-3">Zip Code</dt>
+            <dd class="col-sm-9">@(Model.ZipCode ?? "N/A")</dd>
+
+            <dt class="col-sm-3">Registered</dt>
+            <dd class="col-sm-9">@Model.CreatedDate.ToString("MMMM dd, yyyy")</dd>
+
+            <dt class="col-sm-3">Last Login</dt>
+            <dd class="col-sm-9">@(Model.LastLogin?.ToString("MMMM dd, yyyy hh:mm tt") ?? "Never")</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Inactive</span>
+                }
+            </dd>
+        </dl>
+
+        @if (Model.Inquiries != null && Model.Inquiries.Any())
+        {
+            <h5 class="mt-4">Inquiries (@Model.Inquiries.Count)</h5>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var inquiry in Model.Inquiries.OrderByDescending(i => i.InquiryDate).Take(5))
+                        {
+                            <tr>
+                                <td>@inquiry.InquiryDate.ToString("MM/dd/yyyy")</td>
+                                <td>@inquiry.Subject</td>
+                                <td>
+                                    @if (inquiry.IsResolved)
+                                    {
+                                        <span class="badge bg-success">Resolved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Pending</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="card-footer">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to List
+        </a>
+        <form asp-action="ToggleStatus" asp-route-id="@Model.UserId" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-@(Model.IsActive ? "warning" : "success")">
+                <i class="bi bi-@(Model.IsActive ? "pause" : "play")-circle me-2"></i>
+                @(Model.IsActive ? "Deactivate" : "Activate") User
+            </button>
+        </form>
+        <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-danger">
+            <i class="bi bi-trash me-2"></i>Delete User
+        </a>
+    </div>
+</div>

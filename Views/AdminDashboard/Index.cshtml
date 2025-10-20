@@ -1,0 +1,145 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Dashboard";
+}
+@model RealEstateManagementSystem.Models.ViewModels.DashboardViewModel
+
+<div class="page-header">
+    <h1><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
+    <p>Welcome to the admin panel</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card bg-primary text-white">
+            <div class="card-body">
+                <div class="stat-number">@Model.TotalProperties</div>
+                <div class="stat-label text-white-50">Total Properties</div>
+                <i class="bi bi-building dashboard-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card bg-success text-white">
+            <div class="card-body">
+                <div class="stat-number">@Model.TotalUsers</div>
+                <div class="stat-label text-white-50">Total Users</div>
+                <i class="bi bi-people dashboard-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card bg-warning text-white">
+            <div class="card-body">
+                <div class="stat-number">@Model.UnreadInquiries</div>
+                <div class="stat-label text-white-50">Unread Inquiries</div>
+                <i class="bi bi-envelope dashboard-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card bg-info text-white">
+            <div class="card-body">
+                <div class="stat-number">@Model.FeaturedProperties</div>
+                <div class="stat-label text-white-50">Featured</div>
+                <i class="bi bi-star dashboard-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.PendingUpdates != null && ViewBag.PendingUpdates > 0)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Attention!</strong> There @(ViewBag.PendingUpdates == 1 ? "is" : "are") <strong>@ViewBag.PendingUpdates</strong> pending profile update@(ViewBag.PendingUpdates == 1 ? "" : "s") waiting for your approval.
+        <a asp-controller="AdminUser" asp-action="Index" class="alert-link ms-2">Review Now <i class="bi bi-arrow-right"></i></a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Recent Properties -->
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Recent Properties</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var property in Model.RecentProperties)
+                    {
+                        <tr>
+                            <td>@property.Title</td>
+                            <td>@property.PropertyType</td>
+                            <td>$@property.Price.ToString("N0")</td>
+                            <td><span class="badge bg-success">@property.Status</span></td>
+                            <td>
+                                <a asp-controller="AdminProperty" asp-action="Edit" asp-route-id="@property.PropertyId" class="btn btn-sm btn-primary">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Latest Inquiries -->
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Latest Inquiries</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var inquiry in Model.LatestInquiries)
+                    {
+                        <tr class="@(inquiry.IsRead ? "" : "inquiry-unread")">
+                            <td>@inquiry.Name</td>
+                            <td>@inquiry.Subject</td>
+                            <td>@inquiry.InquiryDate.ToString("MM/dd/yyyy")</td>
+                            <td>
+                                @if (inquiry.IsResolved)
+                                {
+                                    <span class="badge bg-success">Resolved</span>
+                                }
+                                else if (inquiry.IsRead)
+                                {
+                                    <span class="badge bg-info">Read</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">New</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-controller="AdminInquiry" asp-action="Details" asp-route-id="@inquiry.InquiryId" class="btn btn-sm btn-primary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

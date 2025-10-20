@@ -1,0 +1,323 @@
+@model RealEstateManagementSystem.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - DhanLakshmi Estates</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .animated-background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a1929 0%, #1a237e 25%, #283593 50%, #1e3c72 75%, #2a5298 100%);
+            background-size: 300% 300%;
+            animation: gradientWave 20s ease infinite;
+        }
+        
+        @@keyframes gradientWave {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 75%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 25%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(100, 181, 246, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(66, 165, 245, 0.8);
+            animation: particleFloat 15s infinite;
+        }
+        
+        .particle:nth-child(1) { left: 5%; animation-duration: 12s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 15%; animation-duration: 18s; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 25%; animation-duration: 14s; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 35%; animation-duration: 16s; animation-delay: 3s; }
+        .particle:nth-child(5) { left: 45%; animation-duration: 13s; animation-delay: 1.5s; }
+        .particle:nth-child(6) { left: 55%; animation-duration: 17s; animation-delay: 2.5s; }
+        .particle:nth-child(7) { left: 65%; animation-duration: 15s; animation-delay: 0.5s; }
+        .particle:nth-child(8) { left: 75%; animation-duration: 19s; animation-delay: 1.8s; }
+        .particle:nth-child(9) { left: 85%; animation-duration: 14s; animation-delay: 2.2s; }
+        .particle:nth-child(10) { left: 95%; animation-duration: 16s; animation-delay: 0.8s; }
+        
+        @@keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        /* Coin Animation */
+        .coins-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .coin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.6),
+                inset -5px -5px 10px rgba(0, 0, 0, 0.2),
+                inset 5px 5px 10px rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #8B4513;
+            font-size: 24px;
+            animation: coinFall linear infinite;
+        }
+        
+        .coin::before {
+            content: '$';
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .coin::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        /* Individual coin animations with different positions and speeds */
+        .coin:nth-child(1) { left: 5%; animation-duration: 8s; animation-delay: 0s; }
+        .coin:nth-child(2) { left: 12%; animation-duration: 10s; animation-delay: 1s; }
+        .coin:nth-child(3) { left: 20%; animation-duration: 9s; animation-delay: 0.5s; }
+        .coin:nth-child(4) { left: 28%; animation-duration: 11s; animation-delay: 2s; }
+        .coin:nth-child(5) { left: 36%; animation-duration: 8.5s; animation-delay: 1.5s; }
+        .coin:nth-child(6) { left: 44%; animation-duration: 10.5s; animation-delay: 0.8s; }
+        .coin:nth-child(7) { left: 52%; animation-duration: 9.5s; animation-delay: 1.2s; }
+        .coin:nth-child(8) { left: 60%; animation-duration: 11.5s; animation-delay: 0.3s; }
+        .coin:nth-child(9) { left: 68%; animation-duration: 8.8s; animation-delay: 1.8s; }
+        .coin:nth-child(10) { left: 76%; animation-duration: 10.2s; animation-delay: 0.6s; }
+        .coin:nth-child(11) { left: 84%; animation-duration: 9.2s; animation-delay: 1.3s; }
+        .coin:nth-child(12) { left: 92%; animation-duration: 10.8s; animation-delay: 0.2s; }
+        
+        @@keyframes coinFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) rotate(360deg);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .register-container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="animated-background"></div>
+    <div class="particles-container">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <!-- Coin Animation -->
+    <div class="coins-container">
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+    </div>
+
+    <div class="register-container">
+        <div class="col-md-8 col-lg-7">
+            <div class="card register-card">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="/images/logo.png" alt="DhanLakshmi Estates" style="height: 100px; margin-bottom: 15px;" onerror="this.style.display='none'">
+                        <h2 class="fw-bold mt-2" style="color: #1e3c72;">DhanLakshmi Estates</h2>
+                        <p class="text-muted">Create your account</p>
+                    </div>
+
+                    <form asp-action="Register" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" placeholder="First name" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" placeholder="Last name" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label"></label>
+                                <input asp-for="ConfirmPassword" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+1 (555) 123-4567" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <input asp-for="Address" class="form-control" placeholder="Street address" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="City" class="form-label"></label>
+                                <input asp-for="City" class="form-control" placeholder="City" />
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="State" class="form-label"></label>
+                                <input asp-for="State" class="form-control" placeholder="State" />
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="ZipCode" class="form-label"></label>
+                                <input asp-for="ZipCode" class="form-control" placeholder="Zip" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </button>
+
+                        <hr />
+
+                        <div class="text-center">
+                            <p class="text-muted mb-0">Already have an account?</p>
+                            <a asp-action="Login" class="btn btn-outline-primary mt-2">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

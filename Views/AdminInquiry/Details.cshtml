@@ -1,0 +1,138 @@
+@model RealEstateManagementSystem.Models.Inquiry
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Inquiry Details";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-envelope-open me-2"></i>Inquiry Details</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">@Model.Subject</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">From</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9"><a href="mailto:@Model.Email">@Model.Email</a></dd>
+
+                    <dt class="col-sm-3">Phone</dt>
+                    <dd class="col-sm-9">@(Model.Phone ?? "Not provided")</dd>
+
+                    <dt class="col-sm-3">Date</dt>
+                    <dd class="col-sm-9">@Model.InquiryDate.ToString("MMMM dd, yyyy hh:mm tt")</dd>
+
+                    <dt class="col-sm-3">Property</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Property != null)
+                        {
+                            <a asp-controller="AdminProperty" asp-action="Details" asp-route-id="@Model.PropertyId">
+                                @Model.Property.Title
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">General Inquiry</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.IsResolved)
+                        {
+                            <span class="badge bg-success">Resolved</span>
+                        }
+                        else if (Model.IsRead)
+                        {
+                            <span class="badge bg-info">Read</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">New</span>
+                        }
+                    </dd>
+                </dl>
+
+                <hr />
+
+                <h6>Message:</h6>
+                <p class="border p-3 bg-light">@Model.Message</p>
+
+                @if (Model.AdminResponse != null)
+                {
+                    <hr />
+                    <h6>Your Response:</h6>
+                    <p class="border p-3 bg-success bg-opacity-10">@Model.AdminResponse</p>
+                    <small class="text-muted">Responded on: @Model.ResponseDate?.ToString("MMMM dd, yyyy hh:mm tt")</small>
+                }
+            </div>
+        </div>
+
+        <!-- Response Form -->
+        @if (!Model.IsResolved)
+        {
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Respond to Inquiry</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Respond" asp-route-id="@Model.InquiryId" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label">Your Response</label>
+                            <textarea name="adminResponse" class="form-control" rows="5" required 
+                                      placeholder="Type your response here...">@Model.AdminResponse</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-send me-2"></i>Send Response & Mark Resolved
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Back to List
+                    </a>
+                    
+                    <form asp-action="ToggleResolved" asp-route-id="@Model.InquiryId" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-@(Model.IsResolved ? "warning" : "success") w-100">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Mark as @(Model.IsResolved ? "Pending" : "Resolved")
+                        </button>
+                    </form>
+
+                    <a asp-action="Delete" asp-route-id="@Model.InquiryId" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Delete Inquiry
+                    </a>
+                </div>
+
+                @if (Model.User != null)
+                {
+                    <hr />
+                    <h6>User Information</h6>
+                    <p class="mb-1"><strong>Name:</strong> @Model.User.FullName</p>
+                    <p class="mb-1"><strong>Email:</strong> @Model.User.Email</p>
+                    <a asp-controller="AdminUser" asp-action="Details" asp-route-id="@Model.UserId" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                        View User Profile
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

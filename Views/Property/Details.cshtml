@@ -1,0 +1,109 @@
+@model RealEstateManagementSystem.Models.Property
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Property" asp-action="Index">Properties</a></li>
+            <li class="breadcrumb-item active">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Property Images -->
+        <div class="col-md-8">
+            @if (Model.PropertyImages != null && Model.PropertyImages.Any())
+            {
+                <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @foreach (var (image, index) in Model.PropertyImages.Select((img, idx) => (img, idx)))
+                        {
+                            <div class="carousel-item @(index == 0 ? "active" : "")">
+                                <img src="@image.ImageUrl" class="d-block w-100" alt="@image.Caption" style="height: 500px; object-fit: cover;" onerror="this.src='/images/placeholder.jpg'">
+                            </div>
+                        }
+                    </div>
+                    @if (Model.PropertyImages.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    }
+                </div>
+            }
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3>Description</h3>
+                    <p>@Model.Description</p>
+
+                    <h4 class="mt-4">Property Details</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> @Model.PropertyType</p>
+                            <p><strong>Bedrooms:</strong> @Model.Bedrooms</p>
+                            <p><strong>Bathrooms:</strong> @Model.Bathrooms</p>
+                            <p><strong>Area:</strong> @Model.Area sq ft</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Year Built:</strong> @(Model.YearBuilt?.ToString() ?? "N/A")</p>
+                            <p><strong>Garage:</strong> @(Model.GarageSpaces ?? 0) spaces</p>
+                            <p><strong>Status:</strong> <span class="badge bg-success">@Model.Status</span></p>
+                            <p><strong>Views:</strong> @Model.ViewCount</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="text-primary">$@Model.Price.ToString("N0")</h2>
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-geo-alt-fill"></i> @Model.FullAddress
+                    </p>
+                    <a href="#inquiryForm" class="btn btn-primary w-100 mb-2">Contact Agent</a>
+                    <a href="tel:+15551234567" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-telephone-fill me-2"></i>Call Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Inquiry Form -->
+            <div class="card" id="inquiryForm">
+                <div class="card-body">
+                    <h5 class="card-title">Send Inquiry</h5>
+                    <form asp-action="SubmitInquiry" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+                        
+                        <div class="mb-3">
+                            <input type="text" name="Name" class="form-control" placeholder="Your Name" required />
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" name="Email" class="form-control" placeholder="Email" required />
+                        </div>
+                        <div class="mb-3">
+                            <input type="tel" name="Phone" class="form-control" placeholder="Phone" />
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="Subject" class="form-control" value="Inquiry about @Model.Title" required />
+                        </div>
+                        <div class="mb-3">
+                            <textarea name="Message" class="form-control" rows="4" placeholder="Your message..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send Inquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+@model RealEstateManagementSystem.Models.ViewModels.PropertySearchViewModel
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4">Available Properties</h2>
+
+    <!-- Search and Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Search...">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="PropertyType" class="form-select">
+                            <option value="">All Types</option>
+                            @foreach (var type in ViewBag.PropertyTypes as List<string>)
+                            {
+                                <option value="@type" selected="@(Model.PropertyType == type)">@type</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="City" class="form-select">
+                            <option value="">All Cities</option>
+                            @foreach (var city in ViewBag.Cities as List<string>)
+                            {
+                                <option value="@city" selected="@(Model.City == city)">@city</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="MinPrice" value="@Model.MinPrice" class="form-control" placeholder="Min Price">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="MaxPrice" value="@Model.MaxPrice" class="form-control" placeholder="Max Price">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <p class="text-muted mb-0">Showing @Model.Properties.Count of @Model.TotalResults properties</p>
+        <div>
+            <select name="SortBy" class="form-select form-select-sm d-inline w-auto" onchange="window.location.href='?SortBy=' + this.value + '&SortOrder=@Model.SortOrder'">
+                <option value="CreatedDate" selected="@(Model.SortBy == "CreatedDate")">Newest</option>
+                <option value="Price" selected="@(Model.SortBy == "Price")">Price</option>
+                <option value="Title" selected="@(Model.SortBy == "Title")">Name</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Property Cards -->
+    <div class="row">
+        @foreach (var property in Model.Properties)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card property-card">
+                    @{
+                        var img = property.PropertyImages?.FirstOrDefault(i => i.IsPrimary) ?? property.PropertyImages?.FirstOrDefault();
+                    }
+                    <img src="@(img?.ImageUrl ?? "/images/placeholder.jpg")" class="card-img-top" alt="@property.Title" onerror="this.src='/images/placeholder.jpg'">
+                    
+                    @if (property.IsFeatured)
+                    {
+                        <span class="badge bg-warning property-badge">Featured</span>
+                    }
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">@property.Title</h5>
+                        <p class="text-muted mb-2"><i class="bi bi-geo-alt-fill"></i> @property.City, @property.State</p>
+                        <p class="property-price">$@property.Price.ToString("N0")</p>
+                        
+                        <div class="property-features">
+                            <span class="property-feature"><i class="bi bi-door-closed-fill"></i> @property.Bedrooms</span>
+                            <span class="property-feature"><i class="bi bi-droplet-fill"></i> @property.Bathrooms</span>
+                            <span class="property-feature"><i class="bi bi-arrows-fullscreen"></i> @property.Area</span>
+                        </div>
+                        
+                        <a asp-action="Details" asp-route-id="@property.PropertyId" class="btn btn-primary w-100 mt-3">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" href="?PageNumber=@(Model.PageNumber - 1)">Previous</a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                        <a class="page-link" href="?PageNumber=@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="?PageNumber=@(Model.PageNumber + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
